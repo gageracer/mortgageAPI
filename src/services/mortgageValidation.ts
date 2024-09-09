@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-// Define a Zod schema for input validation
-export const MortgageSchema = z
+// Define a Zod schema for input validation for JSON
+export const MortgageSchemaJSON = z
 	.object({
 		propertyPrice: z
 			.number()

@@ -11,7 +11,7 @@ export const formTemplate = (
 	error?: string,
 ): string => {
 	return `
-    <form hx-post="/api/mortgage" hx-swap="outerHTML" hx-target="#form" hx-trigger="keyup change delay:500ms" id="form">
+    <form hx-post="/api/mortgage" hx-swap="outerHTML" hx-target="#form" hx-trigger="change delay:100ms" id="form">
             <div class="grid grid-cols-1 gap-4">
                 <!-- Property Price -->
                 <div>

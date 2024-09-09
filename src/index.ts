@@ -4,6 +4,7 @@ import path from "node:path";
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Serve static files from the "web" directory
 app.use(express.static(path.join(__dirname, "web")));
 

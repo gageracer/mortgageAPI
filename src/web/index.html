@@ -6,84 +6,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.jade.min.css" />
-    <link href="assets/css/output.css" rel="stylesheet" />
+    <link href="assets/css/output.css" rel="stylesheet" defer />
     <script src="assets/js/htmx.min.js" defer></script>
     <title> title </title>
+    <style>
+        .money-input::before {
+            content: '$';
+            padding-right: 5px;
+        }
+    </style>
 </head>
 
-<body></body>
-<header class="container mx-auto text-center mt-8">
-    <h1 class="text-2xl font-bold">Ratehub.ca's Mortgage Payment Calculator</h1>
-</header>
+<body>
 
-<main class="container mx-auto mt-8">
-    <form hx-post="/api/mortgage" hx-target="#result" hx-trigger="change delay:500ms">
-        <div class="grid grid-cols-1 gap-4">
-            <!-- Property Price -->
-            <div>
-                <label for="propertyPrice">Property Price</label>
-                <input type="number" id="propertyPrice" name="propertyPrice" placeholder="600,000" class="form-input"
-                    required>
+    <header class="container mx-auto text-center mt-8">
+        <h1 class="text-2xl font-bold">Ratehub.ca's Mortgage Payment Calculator</h1>
+    </header>
+
+    <main class="container mx-auto mt-8">
+        <form hx-post="/api/mortgage" hx-target="#result" hx-trigger="change delay:100ms">
+            <div class="grid grid-cols-1 gap-4">
+                <!-- Property Price -->
+                <div>
+                    <label for="propertyPrice">Property Price</label>
+                    <input type="number" id="propertyPrice" name="propertyPrice" placeholder="$600,000" value="600000"
+                        class="form-input money-input" required>
+                </div>
+
+                <!-- Down Payment (both percentage and raw number) -->
+                <div>
+                    <label for="downPayment">Down Payment</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="downPaymentPercent" name="downPaymentPercent" placeholder="10%"
+                            value="10" step="0.01" class="form-input" required>
+                        <input type="number" id="downPayment" name="downPayment" placeholder="$60,000" value="60000"
+                            class="form-input money-input" required>
+                    </div>
+                </div>
+
+                <!-- CMHC Insurance -->
+                <div>
+                    <label>CMHC Insurance</label>
+                    <p id="cmhcInsurance" class="form-input">$0</p>
+                </div>
+
+                <!-- Total Mortgage -->
+                <div>
+                    <label>Total Mortgage</label>
+                    <p id="totalMortgage" class="form-input">$0</p>
+                </div>
+
+                <!-- Amortization Period -->
+                <div>
+                    <label for="amortizationPeriod">Amortization Period</label>
+                    <select id="amortizationPeriod" name="amortizationPeriod" class="form-select" required>
+                        <option value="5">5-year</option>
+                        <option value="10">10-year</option>
+                        <option value="15">15-year</option>
+                        <option value="20">20-year</option>
+                        <option value="25" selected>25-year</option>
+                        <option value="30">30-year</option>
+                    </select>
+                </div>
+
+                <!-- Mortgage Rate -->
+                <div>
+                    <label for="annualInterestRate">Mortgage rate</label>
+                    <input type="number" id="annualInterestRate" name="annualInterestRate" placeholder="4.19%"
+                        value="4.19" step="0.01" class="form-input" required>
+                </div>
+
+                <!-- Payment Frequency -->
+                <div>
+                    <label for="paymentSchedule">Payment Frequency</label>
+                    <select id="paymentSchedule" name="paymentSchedule" class="form-select" required>
+                        <option>Monthly</option>
+                        <option>Accelerated bi-weekly</option>
+                        <option>Bi-weekly</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Down Payment Percentage -->
-            <div>
-                <label for="downPaymentPercent">Down payment Percent</label>
-                <input type="number" id="downPaymentPercent" name="downPaymentPercent" placeholder="10"
-                    class="form-input" required>
+            <!-- Submit Button -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Calculate</button>
             </div>
-            <!-- Down Payment -->
-            <div>
-                <label for="downPayment">Down payment</label>
-                <input type="number" id="downPayment" name="downPayment" placeholder="60,000" class="form-input"
-                    required>
-            </div>
+        </form>
 
-            <!-- CMHC Insurance -->
-            <div>
-                <label for="downPayment">Down payment</label>
-                <input type="number" id="downPayment" name="downPayment" placeholder="60,000" class="form-input"
-                    required>
-            </div>
-
-            <!-- Annual Interest Rate -->
-            <div>
-                <label for="annualInterestRate">Annual Interest Rate</label>
-                <input type="number" id="annualInterestRate" name="annualInterestRate" placeholder="4.19" step="0.01"
-                    class="form-input" required>
-            </div>
-
-            <!-- Amortization Period -->
-            <div>
-                <label for="amortizationPeriod">Amortization Period</label>
-                <select id="amortizationPeriod" name="amortizationPeriod" class="form-select" required>
-                    <option value="5">5-year</option>
-                    <option value="10">10-year</option>
-                    <option value="15">15-year</option>
-                    <option value="20">20-year</option>
-                    <option value="25" selected>25-year</option>
-                    <option value="30">30-year</option>
-                </select>
-            </div>
-
-            <!-- Payment Schedule -->
-            <div>
-                <label for="paymentSchedule">Payment Schedule</label>
-                <select id="paymentSchedule" name="paymentSchedule" class="form-select" required>
-                    <option>Monthly</option>
-                    <option>Accelerated bi-weekly</option>
-                    <option>Bi-weekly</option>
-                </select>
-            </div>
-        </div>
-
+        <!-- Results Section -->
         <div id="result" class="mt-8">
             <h3>Mortgage payment</h3>
             <p class="text-lg font-bold">$0.00</p>
         </div>
-    </form>
+    </main>
 
-</main>
 </body>
 
 </html>

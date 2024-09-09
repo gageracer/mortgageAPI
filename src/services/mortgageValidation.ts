@@ -26,3 +26,14 @@ export const MortgageSchemaJSON = z
 	.refine((data) => data.downPayment || data.downPaymentPercent, {
 		message: "Either down payment or down payment percentage must be provided.",
 	});
+
+export const mortgageSchemaWeb = z.object({
+	propertyPrice: z.string().transform((val) => Number.parseFloat(val)),
+	downPayment: z.string().transform((val) => Number.parseFloat(val)),
+	downPaymentPercent: z.string().transform((val) => Number.parseFloat(val)),
+	annualInterestRate: z.string().transform((val) => Number.parseFloat(val)),
+	amortizationPeriod: z.string().transform((val) => Number.parseInt(val, 10)),
+	paymentSchedule: z
+		.enum(["Monthly", "Bi-weekly", "Accelerated bi-weekly"])
+		.transform((val) => val.toLowerCase()),
+});

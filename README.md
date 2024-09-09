@@ -46,7 +46,7 @@ npm test
 ```
 ### API Usage
 
-You can use the API with any tool you like (e.g., Flashpost, Postman). The API accepts the following payload:
+You can use the API with any tool you like (e.g., Flashpost, Postman) to (http://localhost:3001/api/mortgage) a POST request as application/json. The API accepts the following payload:
 
 ```json
 {

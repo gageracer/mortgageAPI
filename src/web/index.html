@@ -5,14 +5,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.jade.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.jade.min.css" defer />
     <link href="assets/css/output.css" rel="stylesheet" defer />
     <script src="assets/js/htmx.min.js" defer></script>
-    <title> title </title>
+    <title> Mortgage Calculator </title>
     <style>
-        .money-input::before {
-            content: '$';
-            padding-right: 5px;
+        /* Hide the spin buttons in WebKit browsers */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Hide spin buttons in Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
@@ -20,44 +27,53 @@
 <body>
 
     <header class="container mx-auto text-center mt-8">
-        <h1 class="text-2xl font-bold">Ratehub.ca's Mortgage Payment Calculator</h1>
+        <h1 class="text-2xl font-bold">John's Mortgage Payment Calculator</h1>
     </header>
 
-    <main class="container mx-auto mt-8">
-        <form hx-post="/api/mortgage" hx-target="#result" hx-trigger="change delay:100ms">
+    <main class="container mx-auto w-fit mt-8">
+        <form hx-post="/api/mortgage" hx-swap="outerHTML" hx-target="#form" hx-trigger="load,keyup change delay:500ms"
+            id="form">
             <div class="grid grid-cols-1 gap-4">
                 <!-- Property Price -->
                 <div>
-                    <label for="propertyPrice">Property Price</label>
-                    <input type="number" id="propertyPrice" name="propertyPrice" placeholder="$600,000" value="600000"
-                        class="form-input money-input" required>
+                    <label for="propertyPrice">Start Here</label>
+                    <div class="relative mt-1">
+                        <span class="absolute inset-y-0 left-0 pl-1 mb-4 flex items-center text-gray-500">$</span>
+                        <input type="number" id="propertyPrice" name="propertyPrice" placeholder="600,000"
+                            value="600000" min="0" required>
+                    </div>
                 </div>
 
                 <!-- Down Payment (both percentage and raw number) -->
                 <div>
-                    <label for="downPayment">Down Payment</label>
+                    <label for="downPayment">- Down Payment</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="downPaymentPercent" name="downPaymentPercent" placeholder="10%"
-                            value="10" step="0.01" class="form-input" required>
-                        <input type="number" id="downPayment" name="downPayment" placeholder="$60,000" value="60000"
-                            class="form-input money-input" required>
+                        <div class="relative mt-1">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-1 mb-4 flex items-center text-gray-500 text-xs">%</span>
+                            <input type="number" id="downPaymentPercent" name="downPaymentPercent" placeholder="10"
+                                value="10" step="0.01" min="0" max="100" class="pl-5" required>
+                        </div>
+                        <div class="relative mt-1">
+                            <span class="absolute inset-y-0 left-0 pl-1 mb-4 flex items-center text-gray-500">$</span>
+                            <input type="number" id="downPayment" name="downPayment" placeholder="60,000" value="60000"
+                                min="0" required>
+                        </div>
                     </div>
                 </div>
 
-                <!-- CMHC Insurance -->
-                <div>
-                    <label>CMHC Insurance</label>
-                    <p id="cmhcInsurance" class="form-input">$0</p>
-                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <!-- CMHC Insurance -->
+                    <label>+ CMHC Insurance</label>
+                    <p id="cmhcInsurance">$0</p>
 
-                <!-- Total Mortgage -->
-                <div>
-                    <label>Total Mortgage</label>
-                    <p id="totalMortgage" class="form-input">$0</p>
-                </div>
 
-                <!-- Amortization Period -->
-                <div>
+                    <!-- Total Mortgage -->
+                    <label>= Total Mortgage</label>
+                    <p id="totalMortgage">$0</p>
+
+
+                    <!-- Amortization Period -->
                     <label for="amortizationPeriod">Amortization Period</label>
                     <select id="amortizationPeriod" name="amortizationPeriod" class="form-select" required>
                         <option value="5">5-year</option>
@@ -67,20 +83,20 @@
                         <option value="25" selected>25-year</option>
                         <option value="30">30-year</option>
                     </select>
-                </div>
 
-                <!-- Mortgage Rate -->
-                <div>
+
+                    <!-- Mortgage Rate -->
                     <label for="annualInterestRate">Mortgage rate</label>
-                    <input type="number" id="annualInterestRate" name="annualInterestRate" placeholder="4.19%"
-                        value="4.19" step="0.01" class="form-input" required>
-                </div>
-
-                <!-- Payment Frequency -->
-                <div>
+                    <div class="relative mt-1">
+                        <span
+                            class="absolute inset-y-0 left-0 pl-1 mb-4 flex items-center text-gray-500 text-xs">%</span>
+                        <input type="number" id="annualInterestRate" name="annualInterestRate" placeholder="4.19"
+                            value="4.19" step="0.01" min="0" required>
+                    </div>
+                    <!-- Payment Frequency -->
                     <label for="paymentSchedule">Payment Frequency</label>
                     <select id="paymentSchedule" name="paymentSchedule" class="form-select" required>
-                        <option>Monthly</option>
+                        <option selected>Monthly</option>
                         <option>Accelerated bi-weekly</option>
                         <option>Bi-weekly</option>
                     </select>
@@ -89,15 +105,70 @@
 
             <!-- Submit Button -->
             <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Calculate</button>
+                <button type="submit" hx-post="/api/mortgage" hx-swap="outerHTML" hx-target="#form"
+                    class="btn btn-primary">Calculate</button>
+            </div>
+            <!-- Results Section -->
+            <div id="result" class="mt-8">
+                <h3>= Mortgage payment</h3>
+                <p class="text-lg font-bold">$0.00</p>
             </div>
         </form>
+        <script>
+            // Function to sync the down payment and percentage inputs
+            function syncInputs() {
+                const propertyPriceInput = document.getElementById('propertyPrice');
+                const downPaymentPercentInput = document.getElementById('downPaymentPercent');
+                const downPaymentInput = document.getElementById('downPayment');
 
-        <!-- Results Section -->
-        <div id="result" class="mt-8">
-            <h3>Mortgage payment</h3>
-            <p class="text-lg font-bold">$0.00</p>
-        </div>
+                if (!propertyPriceInput || !downPaymentPercentInput || !downPaymentInput) return;
+
+                // Update down payment when percentage changes
+                downPaymentPercentInput.addEventListener('input', function () {
+                    const propertyPrice = parseFloat(propertyPriceInput.value);
+                    const downPaymentPercent = parseFloat(downPaymentPercentInput.value);
+
+                    if (!isNaN(propertyPrice) && !isNaN(downPaymentPercent)) {
+                        const calculatedDownPayment = (downPaymentPercent / 100) * propertyPrice;
+                        downPaymentInput.value = calculatedDownPayment.toFixed(2);
+                    }
+                });
+
+                // Update down payment percentage when raw down payment changes
+                downPaymentInput.addEventListener('input', function () {
+                    const propertyPrice = parseFloat(propertyPriceInput.value);
+                    const downPayment = parseFloat(downPaymentInput.value);
+
+                    if (!isNaN(propertyPrice) && !isNaN(downPayment)) {
+                        const calculatedDownPaymentPercent = (downPayment / propertyPrice) * 100;
+                        downPaymentPercentInput.value = calculatedDownPaymentPercent.toFixed(2);
+                    }
+                });
+            }
+            // Function to disable up an down arrow keys to change values, which can trigger multiple server calls and break the ui
+            function disableArrowKeyIncrement() {
+                const numberInputs = document.querySelectorAll('input[type="number"]');
+                numberInputs.forEach((input) => {
+                    input.addEventListener('keydown', function (e) {
+                        if (e.which === 38 || e.which === 40) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+            }
+
+            // Initial event listener attachment
+            document.addEventListener('DOMContentLoaded', function () {
+                disableArrowKeyIncrement();
+                syncInputs();
+            });
+
+            // Re-attach listeners after HTMX swaps content
+            document.body.addEventListener('htmx:afterSwap', function (event) {
+                disableArrowKeyIncrement();
+                syncInputs();
+            });
+        </script>
     </main>
 
 </body>

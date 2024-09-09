@@ -21,19 +21,57 @@ export const MortgageSchemaJSON = z
 				message:
 					"Amortization period must be one of 5, 10, 15, 20, 25, or 30 years.",
 			}),
-		paymentSchedule: z.enum(["monthly", "bi-weekly", "accelerated bi-weekly"]),
+		paymentSchedule: z.enum(["Monthly", "Bi-weekly", "Accelerated bi-weekly"]),
 	})
 	.refine((data) => data.downPayment || data.downPaymentPercent, {
 		message: "Either down payment or down payment percentage must be provided.",
 	});
 
-export const mortgageSchemaWeb = z.object({
-	propertyPrice: z.string().transform((val) => Number.parseFloat(val)),
-	downPayment: z.string().transform((val) => Number.parseFloat(val)),
-	downPaymentPercent: z.string().transform((val) => Number.parseFloat(val)),
-	annualInterestRate: z.string().transform((val) => Number.parseFloat(val)),
-	amortizationPeriod: z.string().transform((val) => Number.parseInt(val, 10)),
-	paymentSchedule: z
-		.enum(["Monthly", "Bi-weekly", "Accelerated bi-weekly"])
-		.transform((val) => val.toLowerCase()),
-});
+// Schema to validate and transform inputs from the web form
+export const mortgageSchemaWeb = z
+	.object({
+		propertyPrice: z.string().transform((val) => {
+			const price = Number.parseFloat(val);
+			if (Number.isNaN(price)) {
+				throw new Error("Invalid property price. Please enter a valid number.");
+			}
+			return price;
+		}),
+		downPaymentPercent: z.string().transform((val) => {
+			const percent = Number.parseFloat(val);
+			if (Number.isNaN(percent) || percent < 0 || percent > 100) {
+				throw new Error(
+					"Invalid down payment Percent. Please enter a valid number between 0 and 100.",
+				);
+			}
+			return percent;
+		}),
+		downPayment: z.string().transform((val) => {
+			const payment = Number.parseFloat(val);
+			if (Number.isNaN(payment)) {
+				throw new Error("Invalid down payment. Please enter a valid number.");
+			}
+			return payment;
+		}),
+		
+		annualInterestRate: z.string().transform((val) => {
+			const rate = Number.parseFloat(val);
+			if (Number.isNaN(rate)) {
+				throw new Error("Invalid interest rate. Please enter a valid number.");
+			}
+			return rate;
+		}),
+		amortizationPeriod: z.string().transform((val) => {
+			const period = Number.parseInt(val, 10);
+			if (Number.isNaN(period)) {
+				throw new Error(
+					"Invalid amortization period. Please enter a valid number.",
+				);
+			}
+			return period;
+		}),
+		paymentSchedule: z.enum(["Monthly", "Bi-weekly", "Accelerated bi-weekly"]),
+	})
+	.refine((data) => data.downPayment || data.downPaymentPercent, {
+		message: "Either down payment or down payment percentage must be provided.",
+	});

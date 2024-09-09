@@ -37,7 +37,7 @@ export const mortgageJSONHandler = (req: Request, res: Response) => {
 
 		// Validate the down payment and calculate mortgage
 		validateDownPayment(propertyPrice, downPayment);
-		const payment = calculateMortgage(
+		const mortgage = calculateMortgage(
 			propertyPrice,
 			downPayment,
 			annualInterestRate,
@@ -45,7 +45,7 @@ export const mortgageJSONHandler = (req: Request, res: Response) => {
 			paymentSchedule,
 		);
 		// Otherwise, return a JSON response
-		res.json({ payment });
+		res.json(mortgage);
 	} catch (error) {
 		if (error instanceof Error) {
 			res.status(400).json({ error: error.message });

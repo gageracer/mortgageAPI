@@ -36,7 +36,15 @@ export const calculateMortgage = (
 	annualInterestRate: number,
 	amortizationPeriod: number,
 	paymentSchedule: string,
-): number => {
+): {
+	principal: number;
+	cmhcInsuranceCost: number;
+	paymentSchedule: "Monthly" | "Bi-weekly" | "Accelerated bi-weekly";
+	interestRatePerPeriod: number;
+	roundedInterestRatePerPeriod: number;
+	numberOfPayments: number;
+	finalPayment: number;
+} => {
 	validateDownPayment(propertyPrice, downPayment);
 
 	let cmhcInsuranceCost = 0;
@@ -50,15 +58,15 @@ export const calculateMortgage = (
 	let interestRatePerPeriod: number;
 
 	switch (paymentSchedule) {
-		case "monthly":
+		case "Monthly":
 			paymentsPerYear = 12;
 			interestRatePerPeriod = annualInterestRate / 100 / 12; // Monthly interest rate
 			break;
-		case "bi-weekly":
+		case "Bi-weekly":
 			paymentsPerYear = 12; // First, calculate the monthly payment and then convert to bi-weekly
 			interestRatePerPeriod = annualInterestRate / 100 / 12; // Monthly interest rate
 			break;
-		case "accelerated bi-weekly":
+		case "Accelerated bi-weekly":
 			paymentsPerYear = 12; // First, calculate the monthly payment and then divide by 2
 			interestRatePerPeriod = annualInterestRate / 100 / 12; // Monthly interest rate
 			break;
@@ -78,13 +86,13 @@ export const calculateMortgage = (
 	let monthlyPayment = principal * (numerator / denominator);
 
 	// Adjust for payment schedule
-	if (paymentSchedule === "accelerated bi-weekly") {
+	if (paymentSchedule === "Accelerated bi-weekly") {
 		monthlyPayment = roundToTwo(monthlyPayment / 2); // Accelerated bi-weekly is half of monthly payment
 	}
-	if (paymentSchedule === "bi-weekly") {
+	if (paymentSchedule === "Bi-weekly") {
 		monthlyPayment = roundToTwo((monthlyPayment * 12) / 26); // Regular bi-weekly is annual divided by 26
 	}
-	if (paymentSchedule === "monthly") {
+	if (paymentSchedule === "Monthly") {
 		monthlyPayment = roundToTwo(monthlyPayment); // monthly
 	}
 
@@ -99,7 +107,15 @@ export const calculateMortgage = (
 		finalPayment: monthlyPayment,
 	});
 
-	return monthlyPayment; // Return monthly payment if not bi-weekly or accelerated bi-weekly
+	return {
+		principal,
+		cmhcInsuranceCost,
+		paymentSchedule,
+		interestRatePerPeriod,
+		roundedInterestRatePerPeriod,
+		numberOfPayments: n,
+		finalPayment: monthlyPayment,
+	}; // Return monthly payment if not bi-weekly or accelerated bi-weekly
 };
 
 export const calculateCMHCInsurance = (

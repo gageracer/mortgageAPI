@@ -56,7 +56,10 @@ export const mortgageWebHandler = (req: Request, res: Response) => {
                 <p class="text-lg font-bold">${error.message}</p>
                 `);
 		} else {
-			res.status(400).json({ error: "An unknown error occurred" });
+			res.send(`
+                <h3>Mortgage Payment</h3>
+                <p class="text-lg font-bold">An unknown error occurred</p>
+                `);
 		}
 	}
 };

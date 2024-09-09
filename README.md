@@ -26,6 +26,7 @@ pnpm start
 npm start
 ```
 The server will start on port 3001(http://localhost:3001/). The command line will provide a link to access the UI.
+![alt text](image.png)
 ### Tailwind server
 
 Start the tailwind by running:
@@ -65,5 +66,4 @@ Input Ranges and Values:
 -	amortizationPeriod: One of the following values: 5, 10, 15, 20, 25, 30.
 -	paymentSchedule: One of the following values: "Monthly", "Bi-weekly", "Accelerated bi-weekly".
 
-
-![alt text](image.png)
+![alt text](image-1.png)

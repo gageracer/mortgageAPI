@@ -7,10 +7,10 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period (25 years)
-			"monthly", // Payment Schedule
+			"Monthly", // Payment Schedule
 		);
 
-		expect(result).toBeCloseTo(2584.35, 2); // Expected result
+		expect(result.finalPayment).toBeCloseTo(2584.35, 2); // Expected result
 	});
 	test("Calculates mortgage for 600,000 property with 10% down payment and 4.19% interest rate", () => {
 		const result = calculateMortgage(
@@ -18,9 +18,9 @@ describe("Mortgage Calculator Tests", () => {
 			60000, // Down Payment (10% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period (25 years)
-			"monthly", // Payment Schedule
+			"Monthly", // Payment Schedule
 		);
-		expect(result).toBeCloseTo(2997.52, 2); // Expected result with CMHC insurance
+		expect(result.finalPayment).toBeCloseTo(2997.52, 2); // Expected result with CMHC insurance
 	});
 	test("Calculates mortgage for 600,000 property with 20% down payment and 4.19% interest rate over 30 years", () => {
 		const result = calculateMortgage(
@@ -28,9 +28,9 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			30, // Amortization Period (30 years)
-			"monthly", // Payment Schedule
+			"Monthly", // Payment Schedule
 		);
-		expect(result).toBeCloseTo(2344.59, 2); // Expected result for 30 years
+		expect(result.finalPayment).toBeCloseTo(2344.59, 2); // Expected result for 30 years
 	});
 	test("Calculates mortgage with bi-weekly payments", () => {
 		const result = calculateMortgage(
@@ -38,9 +38,9 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period
-			"bi-weekly", // Bi-weekly Payment Schedule
+			"Bi-weekly", // Bi-weekly Payment Schedule
 		);
-		expect(result).toBeCloseTo(1192.78, 2); // Allow for small rounding differences
+		expect(result.finalPayment).toBeCloseTo(1192.78, 2); // Allow for small rounding differences
 	});
 	test("Throws error for down payment below 5%", () => {
 		expect(() =>
@@ -49,7 +49,7 @@ describe("Mortgage Calculator Tests", () => {
 				10000, // Down Payment (too low)
 				4.19, // Annual Interest Rate
 				25, // Amortization Period
-				"monthly", // Payment Schedule
+				"Monthly", // Payment Schedule
 			),
 		).toThrow(
 			"For properties between $500,000 and $999,999, the down payment must be at least $35000.00.",
@@ -61,11 +61,11 @@ describe("Mortgage Calculator Tests", () => {
 			60000, // Down Payment (10% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period
-			"monthly", // Payment Schedule
+			"Monthly", // Payment Schedule
 		);
 
 		// Expect a payment with CMHC insurance included
-		expect(result).toBeCloseTo(2997.52, 2); // Adjust expected value based on insurance calculation
+		expect(result.finalPayment).toBeCloseTo(2997.52, 2); // Adjust expected value based on insurance calculation
 	});
 	test("Calculates mortgage with no CMHC insurance for down payment of 20% or more", () => {
 		const result = calculateMortgage(
@@ -73,11 +73,11 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period
-			"monthly", // Payment Schedule
+			"Monthly", // Payment Schedule
 		);
 
 		// Expect a payment with no CMHC insurance
-		expect(result).toBeCloseTo(2584.35, 2);
+		expect(result.finalPayment).toBeCloseTo(2584.35, 2);
 	});
 	test("Throws error for invalid payment schedule", () => {
 		expect(() => {
@@ -110,7 +110,7 @@ describe("Mortgage Calculator Tests", () => {
 				25000, // Down Payment (<10%)
 				4.19, // Annual Interest Rate
 				25, // Amortization Period
-				"monthly", // Payment Schedule
+				"Monthly", // Payment Schedule
 			);
 		}).toThrow(
 			"For properties between $500,000 and $999,999, the down payment must be at least $50000.00.",
@@ -123,7 +123,7 @@ describe("Mortgage Calculator Tests", () => {
 				10000, // Down Payment (<5%)
 				4.19, // Annual Interest Rate
 				25, // Amortization Period
-				"monthly", // Payment Schedule
+				"Monthly", // Payment Schedule
 			);
 		}).toThrow(
 			"For properties $500,000 or less, the down payment must be at least 5% of the property price.",
@@ -135,10 +135,10 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period
-			"bi-weekly", // Bi-weekly Payment Schedule
+			"Bi-weekly", // Bi-weekly Payment Schedule
 		);
 
-		expect(result).toBeCloseTo(1192.78, 2); // Adjust expected value
+		expect(result.finalPayment).toBeCloseTo(1192.78, 2); // Adjust expected value
 	});
 	test("Calculates mortgage for accelerated bi-weekly payments", () => {
 		const result = calculateMortgage(
@@ -146,9 +146,9 @@ describe("Mortgage Calculator Tests", () => {
 			120000, // Down Payment (20% of 600,000)
 			4.19, // Annual Interest Rate
 			25, // Amortization Period
-			"accelerated bi-weekly", // Accelerated Bi-weekly Payment Schedule
+			"Accelerated bi-weekly", // Accelerated Bi-weekly Payment Schedule
 		);
 
-		expect(result).toBeCloseTo(1292.18, 1); // Adjust expected value
+		expect(result.finalPayment).toBeCloseTo(1292.18, 1); // Adjust expected value
 	});
 });
